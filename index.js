@@ -109,14 +109,13 @@ function eliminarCarpetaDirectorio(ruta) {
   }
 }
 
-function escribirArchivo(content){
+function escribirArchivo(content) {
   fs.writeFile('./telefono.txt', `${content}`, function(err) {
-    if(err) {
+    if(err)
       console.error('Error al escribir en el archivo:', err);
-    } else {
+    else
       console.log('Número guardado en el archivo correctamente.');
-    }
-});
+  });
 }
 
 async function connectToWhatsApp( movil, nuevaSesion = false ) {
@@ -141,6 +140,7 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
   let config = {
     printQRInTerminal: true,
     auth: estado,
+    keepAliveIntervalMs: 60000,
     logger: log({ level: "silent" })
   }
 
