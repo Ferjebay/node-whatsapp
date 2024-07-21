@@ -4,6 +4,7 @@ const {
   useMultiFileAuthState,
 } = require("@whiskeysockets/baileys");
 
+const cron = require('node-cron');
 const fs = require('fs');
 const { exec } = require('child_process');
 const log = (pino = require("pino"));
@@ -28,6 +29,10 @@ let socket_client;
 let qrDinamic;
 let reiniciarPorNuevaSesion = false;
 let sessiones = {};
+
+cron.schedule('0 */6 * * *', () => {
+  reiniciarServidor()
+});
 
 const reiniciarServidor = () => {
   exec("pm2 restart index", (error, stdout, stderr) => {
@@ -275,7 +280,6 @@ const isConnected = ( movil ) => {
 io.on("connection", async (socket) => {
   socket_client = socket;
 });
-
 
 app.post("/send-comprobantes", async (req, res) => {
   const {
