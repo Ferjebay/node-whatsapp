@@ -281,25 +281,25 @@ io.on("connection", async (socket) => {
   socket_client = socket;
 });
 
-function transformarRutaPDF(ruta) {
+const transformarRutaPDF = (ruta) => {
   let rutaModificada = ruta.replace(/\\/g, "/");
 
   let indiceInicio = rutaModificada.indexOf("PDF/") + "PDF/".length;
   let parteRelevante = rutaModificada.slice(indiceInicio);
 
-  let nuevaRuta = `https://isp.rednuevaconexion.net/PDF/${parteRelevante}`;
+  let nuevaRuta = `https://isp.rednuevaconexion.net/sri/PDF/${parteRelevante}`;
 
   return nuevaRuta;
 }
 
 
-function transformarRutaXML(ruta) {
+const transformarRutaXML = (ruta) => {
   let rutaModificada = ruta.replace(/\\/g, "/");
 
   let indiceInicio = rutaModificada.indexOf("static/SRI/") + "static/SRI/".length;
   let parteRelevante = rutaModificada.slice(indiceInicio);
 
-  let nuevaRuta = `https://isp.rednuevaconexion.net/${parteRelevante}`;
+  let nuevaRuta = `https://isp.rednuevaconexion.net/sri/${parteRelevante}`;
 
   return nuevaRuta;
 }
