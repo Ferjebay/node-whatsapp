@@ -322,7 +322,10 @@ app.post("/send-comprobantes", async (req, res) => {
     console.log(urlPDF);
     console.log(urlXML);
 
+    console.log("isp", isp);
+
     if (isp) {
+      console.log("pasooo");
       urlPDF = transformarRutaPDF( urlPDF )
       urlXML = transformarRutaXML( urlXML )
     }
@@ -367,6 +370,7 @@ app.post("/send-comprobantes", async (req, res) => {
       res.status(500).send("error ws");
     }
   } catch (err) {
+    console.log(err);
     res.status(500).send("error ws");
   }
 });
