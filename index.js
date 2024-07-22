@@ -281,6 +281,29 @@ io.on("connection", async (socket) => {
   socket_client = socket;
 });
 
+function transformarRutaPDF(ruta) {
+  let rutaModificada = ruta.replace(/\\/g, "/");
+
+  let indiceInicio = rutaModificada.indexOf("PDF/") + "PDF/".length;
+  let parteRelevante = rutaModificada.slice(indiceInicio);
+
+  let nuevaRuta = `https://isp.rednuevaconexion.net/PDF/${parteRelevante}`;
+
+  return nuevaRuta;
+}
+
+
+function transformarRutaXML(ruta) {
+  let rutaModificada = ruta.replace(/\\/g, "/");
+
+  let indiceInicio = rutaModificada.indexOf("static/SRI/") + "static/SRI/".length;
+  let parteRelevante = rutaModificada.slice(indiceInicio);
+
+  let nuevaRuta = `https://isp.rednuevaconexion.net/${parteRelevante}`;
+
+  return nuevaRuta;
+}
+
 app.post("/send-comprobantes", async (req, res) => {
   const {
     telefono,
@@ -290,10 +313,22 @@ app.post("/send-comprobantes", async (req, res) => {
     cliente,
     num_comprobante,
     clave_acceso,
-    empresa
+    empresa,
+    isp
   } = req.body;
 
   try {
+
+    console.log(urlPDF);
+    console.log(urlXML);
+
+    if (isp) {
+      urlPDF = transformarRutaPDF( urlPDF )
+      urlXML = transformarRutaXML( urlXML )
+    }
+
+    console.log("urlPDF", urlPDF);
+    console.log("urlXML", urlXML);
 
     const carpetaExiste = existeCarpeta(`./sessiones/${ telefono }`);
 
