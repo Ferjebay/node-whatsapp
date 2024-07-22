@@ -305,7 +305,7 @@ const transformarRutaXML = (ruta) => {
 }
 
 app.post("/send-comprobantes", async (req, res) => {
-  const {
+  let {
     telefono,
     urlPDF,
     urlXML,
