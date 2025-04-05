@@ -285,24 +285,20 @@ io.on("connection", async (socket) => {
   socket_client = socket;
 });
 
-const transformarRutaPDF = (ruta) => {
+const transformarRuta = (ruta, dominio, tipo) => {
   let rutaModificada = ruta.replace(/\\/g, "/");
 
-  let indiceInicio = rutaModificada.indexOf("PDF/") + "PDF/".length;
+  let indiceInicio = '';
+
+  if (tipo == 'pdf') {
+    indiceInicio = rutaModificada.indexOf("PDF/") + "PDF/".length;
+  } else {
+    indiceInicio = rutaModificada.indexOf("static/SRI/") + "static/SRI/".length;
+  }
+
   let parteRelevante = rutaModificada.slice(indiceInicio);
 
-  let nuevaRuta = `https://isp.rednuevaconexion.net/sri/PDF/${parteRelevante}`;
-
-  return nuevaRuta;
-}
-
-const transformarRutaXML = (ruta) => {
-  let rutaModificada = ruta.replace(/\\/g, "/");
-
-  let indiceInicio = rutaModificada.indexOf("static/SRI/") + "static/SRI/".length;
-  let parteRelevante = rutaModificada.slice(indiceInicio);
-
-  let nuevaRuta = `https://isp.rednuevaconexion.net/sri/${parteRelevante}`;
+  let nuevaRuta = `${dominio}/sri/${ tipo === 'pdf' ? '/PDF/' : '' }${parteRelevante}`;
 
   return nuevaRuta;
 }
@@ -316,14 +312,15 @@ app.post("/send-comprobantes", async (req, res) => {
     cliente,
     num_comprobante,
     empresa,
+    dominio,
     isp
   } = req.body;
 
   try {
 
     if (isp) {
-      urlPDF = transformarRutaPDF( urlPDF )
-      urlXML = transformarRutaXML( urlXML )
+      urlPDF = transformarRuta( urlPDF, dominio, 'pdf' )
+      urlXML = transformarRuta( urlXML, dominio, 'xml' )
     }
 
     console.log('first', req.body)
