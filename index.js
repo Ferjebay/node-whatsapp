@@ -35,6 +35,7 @@ cron.schedule('0 */6 * * *', () => {
 });
 
 const reiniciarServidor = () => {
+  console.log('REINICIANDO...')
   exec("pm2 restart 131", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar el comando: ${error.message}`);
@@ -58,15 +59,16 @@ const renombrarCarpeta = (nombre) => {
   });
 }
 
-const cargarSessiones = () => {
+const cargarSessiones = async () => {
 
-  const content = fs.readFileSync('./telefono.txt', 'utf8');
-  if ( content.length > 0 ) {
+  const content = await fs.readFileSync('./telefono.txt', 'utf8');
+
+  if ( content.trim().length > 0 ) {
     eliminarCarpetaDirectorio(`./sessiones/${ content }`);
     escribirArchivo('');
   }
 
-  fs.readdir('./sessiones', (err, archivos) => {
+  fs.readdir('./sessiones', async (err, archivos) => {
     if (err) {
       console.error('Error al leer la carpeta:', err);
       return;
@@ -80,11 +82,13 @@ const cargarSessiones = () => {
     for (let index = 0; index < carpetas.length; index++) {
       const element = carpetas[index];
 
-      const contenido = fs.readdirSync(`./sessiones/${ element }`);
+      console.log('cargar-sessiones', element)
+
+      const contenido = await fs.readdirSync(`./sessiones/${ element }`);
 
       if ( contenido.length === 0 ) {
         fs.rmdirSync(`./sessiones/${ element }`, { recursive: true });
-      }else{
+      } else {
         setTimeout(() => {
           connectToWhatsApp( element, true )
           .then(res => { console.log("sessiones cargadas", res) })
@@ -137,7 +141,6 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
     estado = state;
     saveCreds2 = saveCreds;
   } else {
-    console.log('222')
     let { state, saveCreds } = await useMultiFileAuthState("./sessiones/test");
     estado = state;
     saveCreds2 = saveCreds;
