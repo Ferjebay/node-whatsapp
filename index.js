@@ -319,17 +319,15 @@ app.post("/send-comprobantes", async (req, res) => {
     isp
   } = req.body;
 
-  console.log(first)
-
   try {
-
-    console.log(urlPDF)
-    console.log(urlXML)
 
     if (isp) {
       urlPDF = transformarRutaPDF( urlPDF )
       urlXML = transformarRutaXML( urlXML )
     }
+
+    console.log('first', req.body)
+    console.log('first', urlPDF, urlXML)
 
     const carpetaExiste = existeCarpeta(`./sessiones/${ telefono }`);
 
