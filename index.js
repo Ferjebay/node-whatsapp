@@ -298,7 +298,7 @@ const transformarRuta = (ruta, dominio, tipo) => {
 
   let parteRelevante = rutaModificada.slice(indiceInicio);
 
-  let nuevaRuta = `${dominio}/sri/${ tipo === 'pdf' ? '/PDF/' : '' }${parteRelevante}`;
+  let nuevaRuta = `${dominio}/sri/${ tipo === 'pdf' ? 'PDF/' : '' }${parteRelevante}`;
 
   return nuevaRuta;
 }
