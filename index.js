@@ -35,7 +35,7 @@ cron.schedule('0 */6 * * *', () => {
 });
 
 const reiniciarServidor = () => {
-  exec("pm2 restart index", (error, stdout, stderr) => {
+  exec("pm2 restart 131", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar el comando: ${error.message}`);
       return;
