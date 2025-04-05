@@ -137,6 +137,7 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
     estado = state;
     saveCreds2 = saveCreds;
   } else {
+    console.log('222')
     let { state, saveCreds } = await useMultiFileAuthState("./sessiones/test");
     estado = state;
     saveCreds2 = saveCreds;
@@ -152,6 +153,8 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
   if ( movil !== null && movil !== "" ) config.auth = estado
 
   sock = makeWASocket( config );
+
+  sock.ev.on("creds.update", saveCreds2);
 
   sock.ev.on("connection.update", async (update) => {
     const { connection, lastDisconnect, qr } = update;
@@ -209,7 +212,7 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
             if (reiniciarPorNuevaSesion)
               reiniciarServidor();
           }, 1500)
-        }else{
+        } else {
           console.log("CONTRARIO");
 
           updateQR("connected", `${id.split(':')[0]}`);
@@ -269,8 +272,6 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
       console.log("error ", error);
     }
   });
-
-  sock.ev.on("creds.update", saveCreds2);
 }
 
 const isConnected = ( movil ) => {
@@ -292,7 +293,6 @@ const transformarRutaPDF = (ruta) => {
   return nuevaRuta;
 }
 
-
 const transformarRutaXML = (ruta) => {
   let rutaModificada = ruta.replace(/\\/g, "/");
 
@@ -312,12 +312,16 @@ app.post("/send-comprobantes", async (req, res) => {
     number,
     cliente,
     num_comprobante,
-    clave_acceso,
     empresa,
     isp
   } = req.body;
 
+  console.log(first)
+
   try {
+
+    console.log(urlPDF)
+    console.log(urlXML)
 
     if (isp) {
       urlPDF = transformarRutaPDF( urlPDF )
@@ -434,6 +438,8 @@ app.post("/check-state", async (req, res) => {
   } else {
 
     const carpetaExiste = existeCarpeta(`./sessiones/${ movil }`);
+
+    console.log('carpetaExiste', carpetaExiste)
 
     if ( movil?.length > 0 && !carpetaExiste )
       movil = null
