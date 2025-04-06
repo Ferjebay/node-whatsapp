@@ -427,8 +427,9 @@ app.post("/check-state", async (req, res) => {
   let { movil } = req.body;
 
   if (isConnected( movil )) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    updateQR("connected", movil);
+    setTimeout(() => {
+      updateQR("connected", movil);
+    }, 1000)
   } else {
 
     const carpetaExiste = existeCarpeta(`./sessiones/${ movil }`);
