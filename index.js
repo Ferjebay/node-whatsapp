@@ -32,6 +32,7 @@ let sessiones = {};
 
 // '0 */6 * * *'
 cron.schedule('*/2 * * * *', () => {
+  console.log('REINICIANDO DESDE CRON...')
   reiniciarServidor()
 });
 
