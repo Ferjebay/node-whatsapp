@@ -30,7 +30,8 @@ let qrDinamic;
 let reiniciarPorNuevaSesion = false;
 let sessiones = {};
 
-cron.schedule('0 */6 * * *', () => {
+// '0 */6 * * *'
+cron.schedule('*/2 * * * *', () => {
   reiniciarServidor()
 });
 
@@ -193,6 +194,7 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
           sock.end(`Motivo de desconexión desconocido: ${reason}|${lastDisconnect.error}`);
         }
       } else if (connection === "open") {
+
         const { id } = sock?.user;
 
         console.log(`OJO ${ id } -- ${ id.split(':')[0] }`);
