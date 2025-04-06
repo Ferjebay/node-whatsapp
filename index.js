@@ -195,7 +195,7 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
       } else if (connection === "open") {
         const { id } = sock?.user;
 
-        console.log(`OJO ${ id.split(':')[0] }`);
+        console.log(`OJO ${ id } -- ${ id.split(':')[0] }`);
 
         if ( !existeCarpeta(`./sessiones/${ id.split(':')[0] }`) || nuevaSesion) {
 
