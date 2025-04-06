@@ -323,9 +323,6 @@ app.post("/send-comprobantes", async (req, res) => {
       urlXML = transformarRuta( urlXML, dominio, 'xml' )
     }
 
-    console.log('first', req.body)
-    console.log('first', urlPDF, urlXML)
-
     const carpetaExiste = existeCarpeta(`./sessiones/${ telefono }`);
 
     let numberWA = number + "@s.whatsapp.net";
@@ -430,17 +427,14 @@ app.post("/check-state", async (req, res) => {
   let { movil } = req.body;
 
   if (isConnected( movil )) {
-    setTimeout(() => {
+    // setTimeout(() => {
       updateQR("connected", movil);
-    }, 1000)
+    // }, 1000)
   } else {
 
     const carpetaExiste = existeCarpeta(`./sessiones/${ movil }`);
 
-    console.log('carpetaExiste', carpetaExiste)
-
-    if ( movil?.length > 0 && !carpetaExiste )
-      movil = null
+    if ( movil?.length > 0 && !carpetaExiste ) movil = null
 
     reiniciarPorNuevaSesion = true;
     await connectToWhatsApp(movil);
@@ -461,7 +455,6 @@ const updateQR = (data, movil = '') => {
         });
         break;
       case "connected":
-        console.log(sessiones[`${ movil }`].socket.user);
         const { id, name } = sessiones[`${ movil }`].socket.user;
         var userinfo = id + " " + name;
 
