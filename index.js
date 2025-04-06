@@ -31,7 +31,7 @@ let reiniciarPorNuevaSesion = false;
 let sessiones = {};
 
 // '0 */6 * * *'
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('*/4 * * * *', () => {
   console.log('REINICIANDO DESDE CRON...')
   reiniciarServidor()
 });
@@ -223,12 +223,12 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
 
           updateQR("connected", `${id.split(':')[0]}`);
 
-          eliminarCarpetaDirectorio(`./sessiones/${id.split(':')[0]}`);
+          // eliminarCarpetaDirectorio(`./sessiones/${id.split(':')[0]}`);
 
-          setTimeout(() => {
-            renombrarCarpeta(`./sessiones/${id.split(':')[0]}`)
-            sessiones[`${ id.split(':')[0] }`].socket.logout();
-          }, 400)
+          // setTimeout(() => {
+          //   renombrarCarpeta(`./sessiones/${id.split(':')[0]}`)
+          //   sessiones[`${ id.split(':')[0] }`].socket.logout();
+          // }, 400)
 
           setTimeout(() => {
             reiniciarServidor();
