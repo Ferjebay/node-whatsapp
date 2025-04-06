@@ -281,6 +281,15 @@ const isConnected = ( movil ) => {
   return sessiones[`${ movil }`] ? true : false;
 };
 
+const existeCarpeta = (rutaCarpeta) => {
+  try {
+    fs.accessSync(rutaCarpeta);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 io.on("connection", async (socket) => {
   socket_client = socket;
 });
@@ -413,15 +422,6 @@ app.post("/send-comprobantes-proforma", async (req, res) => {
 app.get("/", async (req, res) => {
   res.send('ok')
 });
-
-const existeCarpeta = (rutaCarpeta) => {
-  try {
-    fs.accessSync(rutaCarpeta);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
 
 app.post("/check-state", async (req, res) => {
   let { movil } = req.body;
