@@ -31,7 +31,8 @@ let reiniciarPorNuevaSesion = false;
 let sessiones = {};
 
 // '0 */6 * * *'
-cron.schedule('*/15 * * * *', () => {
+// '*/15 * * * *'
+cron.schedule('0 */6 * * *', () => {
   console.log('REINICIANDO DESDE CRON...')
   reiniciarServidor()
 });
