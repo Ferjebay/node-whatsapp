@@ -378,6 +378,45 @@ app.post("/send-comprobantes", async (req, res) => {
   }
 });
 
+app.post("/send-message", async (req, res) => {
+  let {
+    numero_sesion,
+    client_number,
+    msg
+  } = req.body;
+
+  try {
+
+    const carpetaExiste = existeCarpeta(`./sessiones/${ numero_sesion }`);
+
+    let numberWA = client_number + "@s.whatsapp.net";
+
+    if (carpetaExiste) {
+
+      const exist = await sessiones[numero_sesion].socket.onWhatsApp(numberWA);
+
+      if (exist?.jid || (exist && exist[0]?.jid)) {
+
+        try {
+          await sessiones[numero_sesion].socket.sendMessage(exist.jid || exist[0].jid, {
+            text: msg
+          });
+
+          res.status(200).json({ status: true });
+
+        } catch (error) {
+          res.status(500).send("error ws");
+        }
+      }
+    } else {
+      res.status(500).send("error ws");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("error ws");
+  }
+});
+
 app.post("/send-comprobantes-proforma", async (req, res) => {
   const {
     urlPDF,
