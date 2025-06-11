@@ -430,6 +430,59 @@ app.post("/send-message", async (req, res) => {
   }
 });
 
+app.post("/send-message-file", async (req, res) => {
+
+  let { detalles, urlPDF } = req.body;
+
+  const {
+    customer: { celular },
+    sucursal_id: { company_id: { numero_whatsApp } }
+  } = detalles
+
+  try {
+    const carpetaExiste = existeCarpeta(`./sessiones/${ numero_whatsApp }`);
+
+    let numberWA = celular + "@s.whatsapp.net";
+
+    if (carpetaExiste) {
+
+      const exist = await sessiones[numero_whatsApp].socket.onWhatsApp(numberWA);
+
+      if (exist?.jid || (exist && exist[0]?.jid)) {
+
+        try {
+           await sessiones[numero_whatsApp].socket.sendMessage(exist.jid || exist[0].jid, {
+            document: { url: urlPDF },
+            fileName: `test.pdf`,
+            Mimetype: "application/pdf"
+          });
+
+          res.status(200).json({ status: true });
+
+        } catch (error) {
+          console.log(error)
+          res.status(500).send("error ws");
+        }
+      }
+    } else {
+      res.status(500).send("error ws");
+    }
+  } catch (err) {
+    console.log(err)
+    axios.post('https://hooks.slack.com/services/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', {
+      "text": `
+        Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })} - ${new Date().toLocaleDateString('es-ES')} -
+        ${err.message}
+      `
+    });
+    res.status(500).send("error ws");
+  }
+});
+
 app.post("/send-comprobantes-proforma", async (req, res) => {
   const {
     urlPDF,
