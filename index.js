@@ -4,6 +4,7 @@ const {
   useMultiFileAuthState,
 } = require("@whiskeysockets/baileys");
 
+const axios = require('axios');
 const cron = require('node-cron');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -382,6 +383,7 @@ app.post("/send-message", async (req, res) => {
   let {
     numero_sesion,
     client_number,
+    cliente,
     msg
   } = req.body;
 
@@ -405,14 +407,25 @@ app.post("/send-message", async (req, res) => {
           res.status(200).json({ status: true });
 
         } catch (error) {
-          res.status(500).send("error ws");
+          res.status(500).send("error ws", error);
         }
+      } else {
+        res.status(200).json({ status: true });
       }
     } else {
       res.status(500).send("error ws");
     }
   } catch (err) {
-    console.log(err);
+    axios.post('https://hooks.slack.com/services/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', {
+      "text": `
+        Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })} - ${new Date().toLocaleDateString('es-ES')} -
+        ${err.message}
+      `
+    });
     res.status(500).send("error ws");
   }
 });
