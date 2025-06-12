@@ -469,16 +469,16 @@ app.post("/send-message-file", async (req, res) => {
     }
   } catch (err) {
     console.log(err)
-    axios.post('https://hooks.slack.com/services/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', {
-      "text": `
-        Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })} - ${new Date().toLocaleDateString('es-ES')} -
-        ${err.message}
-      `
-    });
+    // axios.post('https://hooks.slack.com/services/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', {
+    //   "text": `
+    //     Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
+    //       hour: '2-digit',
+    //       minute: '2-digit',
+    //       hour12: true
+    //     })} - ${new Date().toLocaleDateString('es-ES')} -
+    //     ${err.message}
+    //   `
+    // });
     res.status(500).send("error ws");
   }
 });
