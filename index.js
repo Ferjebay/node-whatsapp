@@ -432,28 +432,28 @@ app.post("/send-message", async (req, res) => {
 
 app.post("/send-message-file", async (req, res) => {
 
-  let { detalles, urlPDF } = req.body;
-
-  const {
-    customer: { celular },
-    sucursal_id: { company_id: { numero_whatsApp } }
-  } = detalles
+  let {
+    client_number,
+    numero_sesion,
+    nameFile,
+    urlPDF
+  } = req.body;
 
   try {
-    const carpetaExiste = existeCarpeta(`./sessiones/${ numero_whatsApp }`);
+    const carpetaExiste = existeCarpeta(`./sessiones/${ numero_sesion }`);
 
-    let numberWA = celular + "@s.whatsapp.net";
+    let numberWA = client_number + "@s.whatsapp.net";
 
     if (carpetaExiste) {
 
-      const exist = await sessiones[numero_whatsApp].socket.onWhatsApp(numberWA);
+      const exist = await sessiones[numero_sesion].socket.onWhatsApp(numberWA);
 
       if (exist?.jid || (exist && exist[0]?.jid)) {
 
         try {
-           await sessiones[numero_whatsApp].socket.sendMessage(exist.jid || exist[0].jid, {
+           await sessiones[numero_sesion].socket.sendMessage(exist.jid || exist[0].jid, {
             document: { url: urlPDF },
-            fileName: `test.pdf`,
+            fileName: nameFile,
             Mimetype: "application/pdf"
           });
 
@@ -469,7 +469,7 @@ app.post("/send-message-file", async (req, res) => {
     }
   } catch (err) {
     console.log(err)
-    axios.post('https://hooks.slack.com/services/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', {
+    axios.post('https://hooks.slack.com/services/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', {
       "text": `
         Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
           hour: '2-digit',
