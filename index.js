@@ -407,7 +407,7 @@ app.post("/send-message", async (req, res) => {
           res.status(200).json({ status: true });
 
         } catch (error) {
-          res.status(500).send("error ws", error);
+          res.status(500).send("error ws");
         }
       } else {
         res.status(200).json({ status: true });
@@ -416,16 +416,17 @@ app.post("/send-message", async (req, res) => {
       res.status(500).send("error ws");
     }
   } catch (err) {
-    axios.post('https://hooks.slack.com/services/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', {
-      "text": `
-        Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })} - ${new Date().toLocaleDateString('es-ES')} -
-        ${err.message}
-      `
-    });
+    console.log(err)
+    // axios.post('https://hooks.slack.com/services/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', {
+    //   "text": `
+    //     Error en api whatsApp *** ${cliente} - ${ client_number } *** ${new Date().toLocaleTimeString('es-ES', {
+    //       hour: '2-digit',
+    //       minute: '2-digit',
+    //       hour12: true
+    //     })} - ${new Date().toLocaleDateString('es-ES')} -
+    //     ${err.message}
+    //   `
+    // });
     res.status(500).send("error ws");
   }
 });
@@ -529,7 +530,7 @@ app.post("/send-comprobantes-proforma", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
-  res.send('ok')
+  res.status(200).send('OK');
 });
 
 app.post("/check-state", async (req, res) => {
@@ -552,7 +553,7 @@ app.post("/check-state", async (req, res) => {
       updateQR("qr");
     }, 2500);
   }
-  res.send('ok');
+  res.status(200).send('OK');
 })
 
 const updateQR = (data, movil = '') => {
