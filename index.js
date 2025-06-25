@@ -31,11 +31,9 @@ let qrDinamic;
 let reiniciarPorNuevaSesion = false;
 let sessiones = {};
 
-// '0 */6 * * *'
-// '*/15 * * * *'
-cron.schedule('0 */6 * * *', () => {
-  console.log('REINICIANDO DESDE CRON...')
-  reiniciarServidor()
+cron.schedule('3 0 * * *', () => {
+  console.log('🕛 REINICIANDO DESDE CRON A LAS 12:03 AM...');
+  reiniciarServidor();
 });
 
 const reiniciarServidor = () => {
@@ -103,6 +101,49 @@ const cargarSessiones = async () => {
       time += 4000;
     }
   });
+
+  const reconectando = {};
+
+  setInterval(() => {
+    console.log("⏱ Verificando sesiones activas...");
+
+    Object.keys(sessiones).forEach(movil => {
+      const sesion = sessiones[movil];
+      const sock = sesion?.socket;
+      const ws = sock?.ws?.socket;
+
+      if (sock && ws && ws.readyState === 1) {
+        console.log(`✅ [${movil}] sesión activa`);
+        return;
+      }
+
+      if (reconectando[movil]) {
+        console.log(`⚠️ [${movil}] reconexión ya en curso...`);
+        return;
+      }
+
+      console.log(`🔄 [${movil}] sesión caída detectada, intentando reconectar...`);
+      reconectando[movil] = true;
+
+      connectToWhatsApp(movil)
+        .then(() => console.log(`✅ [${movil}] reconectado correctamente`))
+        .catch(err => console.error(`❌ [${movil}] Error al reconectar:`, err))
+        .finally(() => { reconectando[movil] = false; });
+    });
+  }, 5 * 60 * 1000);
+
+  setInterval(() => {
+    console.log("💓 Enviando presencia...");
+    Object.entries(sessiones).forEach(async ([movil, { socket }]) => {
+      try {
+        await socket.sendPresenceUpdate('available');
+        console.log(`📡 Presencia enviada a [${movil}]`);
+      } catch (err) {
+        console.error(`❌ [${movil}] Error al enviar presencia:`, err.message);
+      }
+    });
+  }, 2 * 60 * 1000);
+
 }
 
 function eliminarCarpetaDirectorio(ruta) {
@@ -317,6 +358,28 @@ const transformarRuta = (ruta, dominio, tipo) => {
   return nuevaRuta;
 }
 
+const estadoSesionActiva = (movil) => {
+  const sesion = sessiones[movil];
+
+  if (!sesion || !sesion.socket) return false;
+
+  const sock = sesion.socket;
+  const webSocket = sock?.ws?.socket;
+
+  return !!(sock?.user && webSocket?.readyState === 1);
+};
+
+app.post("/estado-sesion", async (req, res) => {
+  const { movil } = req.body;
+
+  if (!movil) {
+    return res.status(400).json({ error: "Número inválido" });
+  }
+
+  const activo = estadoSesionActiva(movil);
+  return res.status(200).json({ movil, conectado: activo });
+});
+
 app.post("/send-comprobantes", async (req, res) => {
   let {
     telefono,
@@ -410,7 +473,7 @@ app.post("/send-message", async (req, res) => {
           res.status(500).send("error ws");
         }
       } else {
-        res.status(200).json({ status: true });
+        res.status(200).json({ status: true, msg: 'no tiene whatsApp' });
       }
     } else {
       res.status(500).send("error ws");
