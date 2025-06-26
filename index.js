@@ -34,6 +34,19 @@ let sessiones = {};
 cron.schedule('3 0 * * *', () => {
   console.log('🕛 REINICIANDO DESDE CRON A LAS 12:03 AM...');
   reiniciarServidor();
+
+  exec("pm2 flush 131", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error al ejecutar el comando: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Error en la salida estándar: ${stderr}`);
+      return;
+    }
+    console.log(`Resultado del comando:\n${stdout}`);
+  });
+
 });
 
 const reiniciarServidor = () => {
@@ -222,7 +235,13 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
           connectToWhatsApp(movil);
         } else if (reason === DisconnectReason.connectionReplaced) {
           console.log("Conexión reemplazada, otra nueva sesión abierta, cierre la sesión actual primero");
-          sock.logout();
+          // sock.logout();
+
+          reiniciarServidor()
+
+          // delete sessiones[movil];
+          // await connectToWhatsApp(movil);
+          return;
         } else if (reason === DisconnectReason.loggedOut) {
           if (!reiniciarPorNuevaSesion)
             escribirArchivo(session2);
@@ -266,16 +285,9 @@ async function connectToWhatsApp( movil, nuevaSesion = false ) {
 
           updateQR("connected", `${id.split(':')[0]}`);
 
-          // eliminarCarpetaDirectorio(`./sessiones/${id.split(':')[0]}`);
-
           // setTimeout(() => {
-          //   renombrarCarpeta(`./sessiones/${id.split(':')[0]}`)
-          //   sessiones[`${ id.split(':')[0] }`].socket.logout();
-          // }, 400)
-
-          setTimeout(() => {
-            reiniciarServidor();
-          }, 1500)
+          //   reiniciarServidor();
+          // }, 1500)
         }
 
         return;
